@@ -69,16 +69,17 @@ void WaitForInterrupt(void);  // low power mode
 void ADC0_InitSWTriggerSeq3_Ch9(void){ 
    int32_t k=0;                               // 1) activate clock for Port E
  // SYSCTL_RCGCGPIO_R |= 0x10;
+	
 	SYSCTL_RCGCGPIO_R |= SYSCTL_RCGCGPIO_R3;
   while(k<10000){
 	k++;
 	}
-  /*
-		GPIO_PORTE_DIR_R &= ~0x10;      // 2) make PE4 input
-  GPIO_PORTE_AFSEL_R |= 0x10;     // 3) enable alternate function on PE4
-  GPIO_PORTE_DEN_R &= ~0x10;      // 4) disable digital I/O on PE4
-  GPIO_PORTE_AMSEL_R |= 0x10;     // 5) enable analog functionality on PE4
-   */
+  
+	//	GPIO_PORTE_DIR_R &= ~0x10;      // 2) make PE4 input
+  //GPIO_PORTE_AFSEL_R |= 0x10;     // 3) enable alternate function on PE4
+  //GPIO_PORTE_DEN_R &= ~0x10;      // 4) disable digital I/O on PE4
+  //GPIO_PORTE_AMSEL_R |= 0x10;     // 5) enable analog functionality on PE4
+  //
 		 GPIO_PORTD_DIR_R &= ~0x02;  // 3.6) make PD1 input
       GPIO_PORTD_AFSEL_R |= 0x02; // 4.6) enable alternate function on PD1
       GPIO_PORTD_DEN_R &= ~0x02;  // 5.6) disable digital I/O on PD1
@@ -86,17 +87,18 @@ void ADC0_InitSWTriggerSeq3_Ch9(void){
 //  while((SYSCTL_PRADC_R&0x0001) != 0x0001){};    // good code, but not yet implemented in simulator
 
 	SYSCTL_RCGCADC_R |= 0x0001;   // 7) activate ADC0 
-  ADC0_PC_R &= ~0xF;              // 7) clear max sample rate field
-  ADC0_PC_R |= 0x1;               //    configure for 125K samples/sec
-  ADC0_SSPRI_R = 0x0123;          // 8) Sequencer 3 is highest priority
-  ADC0_ACTSS_R &= ~0x0008;        // 9) disable sample sequencer 3
-  ADC0_EMUX_R &= ~0xF000;         // 10) seq3 is software trigger
-  ADC0_SSMUX3_R &= ~0x000F;       // 11) clear SS3 field
-  ADC0_SSMUX3_R += 9;             //    set channel
-  ADC0_SSCTL3_R = 0x0006;         // 12) no TS0 D0, yes IE0 END0
-  ADC0_IM_R &= ~0x0008;           // 13) disable SS3 interrupts
-  ADC0_ACTSS_R |= 0x0008;         // 14) enable sample sequencer 3
-  ADC0_SAC_R = ADC_SAC_AVG_64X;		// 15) enable hardware averaging 64 bit
+ // ADC0_PC_R &= ~0xF;              // 7) clear max sample rate field
+  //ADC0_PC_R |= 0x1;               //    configure for 125K samples/sec
+  //ADC0_SSPRI_R = 0x0123;          // 8) Sequencer 3 is highest priority
+  //ADC0_ACTSS_R &= ~0x0008;        // 9) disable sample sequencer 3
+  //ADC0_EMUX_R &= ~0xF000;         // 10) seq3 is software trigger
+  //ADC0_SSMUX3_R &= ~0x000F;       // 11) clear SS3 field
+  //ADC0_SSMUX3_R += 9;             //    set channel
+  //ADC0_SSCTL3_R = 0x0006;         // 12) no TS0 D0, yes IE0 END0
+  //ADC0_IM_R &= ~0x0008;           // 13) disable SS3 interrupts
+  //ADC0_ACTSS_R |= 0x0008;         // 14) enable sample sequencer 3
+  //ADC0_SAC_R = ADC_SAC_AVG_64X;		// 15) enable hardware averaging 64 bit
+
 }
 
 

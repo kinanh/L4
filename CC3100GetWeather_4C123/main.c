@@ -234,7 +234,7 @@ void Crash(uint32_t time){
 // 1) change Austin Texas to your city
 // 2) you can change metric to imperial if you want temperature in F
 #define REQUEST "GET /data/2.5/weather?q=Austin%20Texas&APPID=e5a0ebb97b8683a29b45d1d0c6bad241&units=metric HTTP/1.1\r\nUser-Agent: Keil\r\nHost:api.openweathermap.org\r\nAccept: */*\r\n\r\n"
-#define SENDVAL "GET /query?city=Austin&id=Kinan%20Alice&greet=Int%20Temp%3D21C&edxcode=8086HTTP/1.1\r\nUser-Agent: Keil\r\nHost: embedded-systems-server.appspot.com\r\n\r\n"
+#define SENDVAL "GET /query?city=Austin&id=Kinan%20Alice&greet=Int%20Temp%3D21C&edxcode=8086 HTTP/1.1\r\nUser-Agent: Keil\r\nHost: embedded-systems-server.appspot.com\r\n\r\n"
 // 1) go to http://openweathermap.org/appid#use 
 // 2) Register on the Sign up page
 // 3) get an API key (APPID) replace the 1234567890abcdef1234567890abcdef with your APPID
@@ -245,7 +245,7 @@ int main(void){int32_t retVal;  SlSecParams_t secParams;
   initClk();        // PLL 50 MHz
   UART_Init();      // Send data to PC, 115200 bps
   LED_Init();       // initialize LaunchPad I/O 
-	//ADC0_InitSWTriggerSeq3_Ch9();         // adc init
+	ADC0_InitSWTriggerSeq3_Ch9();         // adc init
 	//Timer0A_Init100HzInt(); 							// adc init
 	//EnableInterrupts();  
 	UARTprintf("Weather App\n");
@@ -286,36 +286,41 @@ int main(void){int32_t retVal;  SlSecParams_t secParams;
     }
 		//PRINT TEMP
 		
-    while(Board_Input()==0){}; // wait for touch
+    while(Board_Input()==0){
+		
+		//adcVal = getADC();
+		//UARTprintf("\n %d",adcVal);
+		} // wait for touch
     LED_GreenOff();
 		//PRINT ADC
 		adcVal = getADC();
-		UARTprintf("\n %d",adcVal);				
-  }
-	strcpy(HostName,"embedded-systems-server.appspot.com");
-	//1
-	hostValvano = sl_NetAppDnsGetHostByName(HostName,
+		UARTprintf("\n %d",adcVal);
+		strcpy(HostName,"embedded-systems-server.appspot.com");
+		//1
+		hostValvano = sl_NetAppDnsGetHostByName(HostName,
              strlen(HostName),&DestinationIP, SL_AF_INET);
-	//2
-	    if(hostValvano == 0){
-      Addr.sin_family = SL_AF_INET;
-      Addr.sin_port = sl_Htons(80);
-      Addr.sin_addr.s_addr = sl_Htonl(DestinationIP);// IP to big endian 
-      ASize = sizeof(SlSockAddrIn_t);
-      SockID = sl_Socket(SL_AF_INET,SL_SOCK_STREAM, 0);
-      if( SockID >= 0 ){
-        hostValvano = sl_Connect(SockID, ( SlSockAddr_t *)&Addr, ASize);
-      }
-      if((SockID >= 0)&&(hostValvano >= 0)){
-        sprintf(SendBuff,"GET /query?city=Austin Texas&id=Alice and Kinan&greet=ADC %d&edxcode=8086HTTP/1.1\r\nUser-Agent: Keil\r\nHost: embedded-systems-server.appspot.com\r\n\r\n", adcVal); 
+		//2
+	  if(hostValvano == 0){
+			Addr.sin_family = SL_AF_INET;
+			Addr.sin_port = sl_Htons(80);
+			Addr.sin_addr.s_addr = sl_Htonl(DestinationIP);// IP to big endian 
+			ASize = sizeof(SlSockAddrIn_t);
+			SockID = sl_Socket(SL_AF_INET,SL_SOCK_STREAM, 0);
+			if( SockID >= 0 ){
+				hostValvano = sl_Connect(SockID, ( SlSockAddr_t *)&Addr, ASize);
+			}
+			if((SockID >= 0)&&(hostValvano >= 0)){
+				strcpy(SendBuff,SENDVAL); 
+				//sprintf(SendBuff,"GET /query?city=AustinTexas&id=AliceandKinan&greet=ADC%d&edxcode=8086HTTP/1.1\r\nUser-Agent: Keil\r\nHost: embedded-systems-server.appspot.com\r\n\r\n", adcVal); 
 				sl_Send(SockID, SendBuff, strlen(SendBuff), 0);// Send the HTTP GET 
-        sl_Recv(SockID, Recvbuff, MAX_RECV_BUFF_SIZE, 0);// Receive response 
-        sl_Close(SockID);
-        LED_GreenOn();
-        UARTprintf("\r\n\r\n");
-        UARTprintf(Recvbuff);  UARTprintf("\r\n");
-      }
-    }
+				sl_Recv(SockID, Recvbuff, MAX_RECV_BUFF_SIZE, 0);// Receive response 
+				sl_Close(SockID);
+				LED_GreenOn();
+				UARTprintf("\r\n\r\n");
+				UARTprintf(Recvbuff);  UARTprintf("\r\n");
+			}
+		}
+  }
 
 }
 
